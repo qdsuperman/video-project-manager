@@ -10,16 +10,17 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
         import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
 
-        // Firebase configuration - 用户需要替换这些值
+        // Firebase configuration
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+    apiKey: "AIzaSyDXkOJ-bBMyROThD0al3TNpPYoSWwUvLjc",
+    authDomain: "video-manager-aa6bf.firebaseapp.com",
+    databaseURL: "https://video-manager-aa6bf-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "video-manager-aa6bf",
+    storageBucket: "video-manager-aa6bf.firebasestorage.app",
+    messagingSenderId: "515806508959",
+    appId: "1:515806508959:web:f7e23d5f324c48b5156faa"
+};
+
 
         // Initialize Firebase
         let app, database;

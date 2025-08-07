@@ -731,6 +731,36 @@ input[type="date"] {
 
     .controls {
         justify-content: center;
+        margin-bottom: 15px;
+        padding: 0 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .controls .btn {
+        padding: 12px 16px;
+        font-size: 14px;
+        min-width: 80px;
+        flex: 1;
+        max-width: 120px;
+    }
+
+    /* 确保保存按钮在移动端始终占据空间，避免布局跳动 */
+    #saveBtn {
+        background-color: #28a745 !important;
+        color: white !important;
+        border: 2px solid #28a745 !important;
+        /* 使用 visibility 而不是 display 来保持布局空间 */
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    /* 当保存按钮需要显示时 */
+    #saveBtn.show {
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
     /* 隐藏桌面端表格，显示移动端卡片 */

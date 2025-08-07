@@ -263,12 +263,24 @@ function updateMobileTable() {
 
 // 显示保存按钮
 function showSaveButton() {
-    document.getElementById('saveBtn').style.display = 'inline-block';
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) {
+        saveBtn.classList.add('show');
+        console.log('保存按钮已显示');
+    } else {
+        console.error('找不到保存按钮元素');
+    }
 }
 
 // 隐藏保存按钮
 function hideSaveButton() {
-    document.getElementById('saveBtn').style.display = 'none';
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) {
+        saveBtn.classList.remove('show');
+        console.log('保存按钮已隐藏');
+    } else {
+        console.error('找不到保存按钮元素');
+    }
 }
 
 // 保存更改

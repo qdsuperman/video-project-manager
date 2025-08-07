@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频生命周期跟踪表</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>视频生命周期跟踪表</h1>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('charts')">数据图表</div>
+            <div class="tab" onclick="switchTab('table')">数据表格</div>
+        </div>
+        
+        <!-- 数据图表标签页 -->
+        <div class="tab-content active" id="charts">
+            <!-- 数据指标统计 -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card views">
+                    <h3>总浏览量</h3>
+                    <div class="number" id="totalViews">0</div>
+                </div>
+                <div class="stat-card likes">
+                    <h3>总点赞量</h3>
+                    <div class="number" id="totalLikes">0</div>
+                </div>
+                <div class="stat-card comments">
+                    <h3>总评论量</h3>
+                    <div class="number" id="totalComments">0</div>
+                </div>
+                <div class="stat-card shares">
+                    <h3>总转发量</h3>
+                    <div class="number" id="totalShares">0</div>
+                </div>
+            </div>
+            
+            <!-- 图表容器 -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3>制作进度统计</h3>
+                    <canvas id="progressChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>视频数据指标</h3>
+                    <canvas id="metricsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 数据表格标签页 -->
+        <div class="tab-content" id="table">
+            <!-- 项目状态统计 -->
+            <div class="status-stats" id="statusStats">
+                <div class="status-card not-started">
+                    <h3>未开始</h3>
+                    <div class="number" id="notStartedCount">0</div>
+                </div>
+                <div class="status-card in-progress">
+                    <h3>进行中</h3>
+                    <div class="number" id="inProgressCount">0</div>
+                </div>
+                <div class="status-card published">
+                    <h3>已发布</h3>
+                    <div class="number" id="publishedCount">0</div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-primary" onclick="addRow()">添加行</button>
+                <button class="btn btn-danger" onclick="deleteSelectedRows()">删除选中行</button>
+                <button class="btn btn-success" onclick="saveChanges()" id="saveBtn" style="display: none;">保存更改</button>
+            </div>
+            
+            <!-- 桌面端表格 -->
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>视频名称</th>
+                            <th>剧本完成进度</th>
+                            <th>拍摄进度</th>
+                            <th>剪辑进度</th>
+                            <th>审核进度</th>
+                            <th>发布进度</th>
+                            <th>发布时间</th>
+                            <th>浏览量</th>
+                            <th>点赞量</th>
+                            <th>评论量</th>
+                            <th>转发量</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 移动端卡片 -->
+            <div class="mobile-table-container" id="mobileTableContainer">
+            </div>
+        </div>
+    </div>
+
+    <!-- 快速导航按钮 -->
+    <div class="quick-nav" id="quickNav">
+        <button class="quick-nav-btn" onclick="scrollToTop()" title="回到顶部">↑</button>
+        <button class="quick-nav-btn" onclick="scrollToBottom()" title="到底部">↓</button>
+    </div>
+
+    <script type="module" src="js/firebase-config.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+

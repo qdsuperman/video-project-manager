@@ -472,6 +472,36 @@ function createMobileCard(item, index) {
             </div>
         </div>
 
+        <!-- 已发布视频的四个量显示在外面 -->
+        ${item.发布进度 === '完成' ? `
+        <div class="mobile-metrics-external">
+            <div class="mobile-metric-external">
+                <div class="mobile-metric-label">浏览量</div>
+                <input type="number" value="${item.浏览量 || ''}"
+                       onchange="updateData(${index}, '浏览量', this.value)"
+                       class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+            </div>
+            <div class="mobile-metric-external">
+                <div class="mobile-metric-label">点赞量</div>
+                <input type="number" value="${item.点赞量 || ''}"
+                       onchange="updateData(${index}, '点赞量', this.value)"
+                       class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+            </div>
+            <div class="mobile-metric-external">
+                <div class="mobile-metric-label">评论量</div>
+                <input type="number" value="${item.评论量 || ''}"
+                       onchange="updateData(${index}, '评论量', this.value)"
+                       class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+            </div>
+            <div class="mobile-metric-external">
+                <div class="mobile-metric-label">转发量</div>
+                <input type="number" value="${item.转发量 || ''}"
+                       onchange="updateData(${index}, '转发量', this.value)"
+                       class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+            </div>
+        </div>
+        ` : ''}
+
         <div class="mobile-card-content" id="mobile-card-content-${index}">
             <div class="mobile-field">
                 <span class="mobile-field-label">剧本:</span>
@@ -541,32 +571,7 @@ function createMobileCard(item, index) {
                 </div>
             </div>
 
-            <div class="mobile-metrics">
-                <div class="mobile-metric">
-                    <div class="mobile-metric-label">浏览量</div>
-                    <input type="number" value="${item.浏览量 || ''}"
-                           onchange="updateData(${index}, '浏览量', this.value)"
-                           class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
-                </div>
-                <div class="mobile-metric">
-                    <div class="mobile-metric-label">点赞量</div>
-                    <input type="number" value="${item.点赞量 || ''}"
-                           onchange="updateData(${index}, '点赞量', this.value)"
-                           class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
-                </div>
-                <div class="mobile-metric">
-                    <div class="mobile-metric-label">评论量</div>
-                    <input type="number" value="${item.评论量 || ''}"
-                           onchange="updateData(${index}, '评论量', this.value)"
-                           class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
-                </div>
-                <div class="mobile-metric">
-                    <div class="mobile-metric-label">转发量</div>
-                    <input type="number" value="${item.转发量 || ''}"
-                           onchange="updateData(${index}, '转发量', this.value)"
-                           class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
-                </div>
-            </div>
+            <!-- 四个量已移到外面，这里只保留其他内容 -->
         </div>
     `;
 
@@ -620,45 +625,17 @@ function toggleMobileCard(index) {
         content.classList.remove('expanded');
         icon.textContent = '▼';
         text.textContent = '展开';
+        button.classList.remove('expanded'); // 移除展开状态的颜色
     } else {
         // 展开
         content.classList.add('expanded');
         icon.textContent = '▲';
         text.textContent = '折叠';
+        button.classList.add('expanded'); // 添加展开状态的颜色
     }
 }
 
-// 全部展开/折叠移动端卡片
-function toggleAllMobileCards() {
-    const allContents = document.querySelectorAll('.mobile-card-content');
-    const toggleAllBtn = document.getElementById('toggleAllBtn');
 
-    if (allContents.length === 0) return;
-
-    // 检查当前状态 - 如果有任何一个是折叠的，就全部展开；如果全部都展开了，就全部折叠
-    const hasCollapsed = Array.from(allContents).some(content => !content.classList.contains('expanded'));
-
-    allContents.forEach((content, index) => {
-        const button = content.parentElement.querySelector('.mobile-card-toggle');
-        const icon = button.querySelector('.toggle-icon');
-        const text = button.querySelector('.toggle-text');
-
-        if (hasCollapsed) {
-            // 全部展开
-            content.classList.add('expanded');
-            icon.textContent = '▲';
-            text.textContent = '折叠';
-        } else {
-            // 全部折叠
-            content.classList.remove('expanded');
-            icon.textContent = '▼';
-            text.textContent = '展开';
-        }
-    });
-
-    // 更新全部展开/折叠按钮的文本
-    toggleAllBtn.textContent = hasCollapsed ? '全部折叠' : '全部展开';
-}
 
 // 创建表格行
 function createTableRow(item, index) {
@@ -827,16 +804,30 @@ function updateData(index, field, value) {
         });
     }
 
-    // 更新移动端卡片样式
+    // 更新移动端卡片样式和内容
     const mobileCard = document.querySelector(`input.mobile-card-checkbox[data-index="${index}"]`)?.closest('.mobile-card');
     if (mobileCard) {
-        mobileCard.className = 'mobile-card';
-        if (videoData[index].发布进度 === '完成') {
-            mobileCard.classList.add('completed');
-        } else if (videoData[index].剧本完成进度 === '未完成' || videoData[index].剧本完成进度 === '') {
-            mobileCard.classList.add('not-started');
+        // 如果发布进度改变，需要重新渲染整个卡片以显示/隐藏外部四个量
+        if (field === '发布进度') {
+            const container = mobileCard.parentElement;
+            const newCard = createMobileCard(videoData[index], index);
+            container.replaceChild(newCard, mobileCard);
         } else {
-            mobileCard.classList.add('in-progress');
+            // 只更新样式
+            mobileCard.className = 'mobile-card';
+            if (videoData[index].发布进度 === '完成') {
+                mobileCard.classList.add('completed');
+            } else if (videoData[index].剧本完成进度 === '未完成' || videoData[index].剧本完成进度 === '') {
+                mobileCard.classList.add('not-started');
+            } else {
+                mobileCard.classList.add('in-progress');
+            }
+
+            // 更新进度摘要
+            const progressSummary = mobileCard.querySelector('.progress-summary');
+            if (progressSummary) {
+                progressSummary.textContent = getProgressSummary(videoData[index]);
+            }
         }
     }
 }

@@ -592,6 +592,18 @@ input[type="date"] {
     color: #007bff;
 }
 
+.mobile-card-toggle.expanded {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.mobile-card-toggle.expanded:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: white;
+}
+
 .toggle-icon {
     font-size: 10px;
     transition: transform 0.2s ease;
@@ -612,6 +624,37 @@ input[type="date"] {
 
 .mobile-card-checkbox {
     margin-left: 10px;
+}
+
+/* 外部显示的四个量样式 */
+.mobile-metrics-external {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: rgba(0, 123, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(0, 123, 255, 0.1);
+}
+
+.mobile-metric-external {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.mobile-metric-external .mobile-metric-label {
+    font-size: 11px;
+    color: #666;
+    font-weight: 500;
+}
+
+.mobile-metric-external .mobile-metric-value {
+    width: 100%;
+    max-width: 80px;
+    font-size: 12px;
 }
 
 .mobile-field {

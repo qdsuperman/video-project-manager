@@ -81,7 +81,6 @@
         <div class="demo-title">📱 移动端卡片折叠功能演示</div>
         
         <div class="demo-controls">
-            <button class="demo-btn" onclick="toggleAllMobileCards()" id="toggleAllBtn">全部展开</button>
             <button class="demo-btn secondary" onclick="addDemoData()">添加演示数据</button>
             <button class="demo-btn secondary" onclick="clearDemo()">清空演示</button>
         </div>
@@ -91,7 +90,7 @@
         </div>
         
         <div class="demo-note">
-            💡 点击卡片上的"展开/折叠"按钮来控制单个卡片，或使用上方的"全部展开/折叠"按钮批量控制所有卡片。
+            💡 点击卡片上的"展开/折叠"按钮来控制单个卡片。已发布的视频会在卡片外显示播放量、点赞量、评论量、转发量。
         </div>
     </div>
 
@@ -163,7 +162,6 @@
         function clearDemo() {
             videoData = [];
             document.getElementById('mobileTableContainer').innerHTML = '';
-            document.getElementById('toggleAllBtn').textContent = '全部展开';
         }
 
         // 页面加载时添加演示数据

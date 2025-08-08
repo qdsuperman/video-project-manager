@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>移动端卡片折叠功能演示</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        
+        .demo-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .demo-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .demo-controls {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .demo-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .demo-btn:hover {
+            background: #0056b3;
+        }
+        
+        .demo-btn.secondary {
+            background: #6c757d;
+        }
+        
+        .demo-btn.secondary:hover {
+            background: #545b62;
+        }
+        
+        .mobile-table-container {
+            display: block !important;
+        }
+        
+        .demo-note {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #1976d2;
+            margin-top: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-title">📱 移动端卡片折叠功能演示</div>
+        
+        <div class="demo-controls">
+            <button class="demo-btn" onclick="toggleAllMobileCards()" id="toggleAllBtn">全部展开</button>
+            <button class="demo-btn secondary" onclick="addDemoData()">添加演示数据</button>
+            <button class="demo-btn secondary" onclick="clearDemo()">清空演示</button>
+        </div>
+        
+        <div class="mobile-table-container" id="mobileTableContainer">
+            <!-- 卡片将在这里动态生成 -->
+        </div>
+        
+        <div class="demo-note">
+            💡 点击卡片上的"展开/折叠"按钮来控制单个卡片，或使用上方的"全部展开/折叠"按钮批量控制所有卡片。
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // 演示数据
+        let demoData = [
+            {
+                视频名称: "产品介绍视频",
+                剧本完成进度: "完成",
+                来访拍摄进度: "完成",
+                剪辑进度: "完成",
+                审核进度: "完成",
+                发布进度: "完成",
+                发布时间: "2024-01-15",
+                浏览量: "12500",
+                点赞量: "890",
+                评论量: "156",
+                转发量: "78"
+            },
+            {
+                视频名称: "用户教程第一集",
+                剧本完成进度: "完成",
+                来访拍摄进度: "完成",
+                剪辑进度: "未完成",
+                审核进度: "",
+                发布进度: "",
+                发布时间: "",
+                浏览量: "",
+                点赞量: "",
+                评论量: "",
+                转发量: ""
+            },
+            {
+                视频名称: "品牌宣传片",
+                剧本完成进度: "未完成",
+                来访拍摄进度: "",
+                剪辑进度: "",
+                审核进度: "",
+                发布进度: "",
+                发布时间: "",
+                浏览量: "",
+                点赞量: "",
+                评论量: "",
+                转发量: ""
+            },
+            {
+                视频名称: "客户案例分享",
+                剧本完成进度: "完成",
+                来访拍摄进度: "完成",
+                剪辑进度: "完成",
+                审核进度: "未完成",
+                发布进度: "",
+                发布时间: "",
+                浏览量: "",
+                点赞量: "",
+                评论量: "",
+                转发量: ""
+            }
+        ];
+
+        // 添加演示数据
+        function addDemoData() {
+            videoData = [...demoData];
+            updateMobileTable();
+        }
+
+        // 清空演示
+        function clearDemo() {
+            videoData = [];
+            document.getElementById('mobileTableContainer').innerHTML = '';
+            document.getElementById('toggleAllBtn').textContent = '全部展开';
+        }
+
+        // 页面加载时添加演示数据
+        document.addEventListener('DOMContentLoaded', function() {
+            addDemoData();
+        });
+
+        // 重写updateData函数以适应演示
+        function updateData(index, field, value) {
+            if (videoData[index]) {
+                videoData[index][field] = value;
+                
+                // 更新卡片样式
+                const mobileCard = document.querySelector(`input.mobile-card-checkbox[data-index="${index}"]`)?.closest('.mobile-card');
+                if (mobileCard) {
+                    mobileCard.className = 'mobile-card';
+                    if (videoData[index].发布进度 === '完成') {
+                        mobileCard.classList.add('completed');
+                    } else if (videoData[index].剧本完成进度 === '未完成' || videoData[index].剧本完成进度 === '') {
+                        mobileCard.classList.add('not-started');
+                    } else {
+                        mobileCard.classList.add('in-progress');
+                    }
+                }
+                
+                // 更新进度摘要
+                const progressSummary = mobileCard?.querySelector('.progress-summary');
+                if (progressSummary) {
+                    progressSummary.textContent = getProgressSummary(videoData[index]);
+                }
+            }
+        }
+
+        // 简化的setTodayMobile函数
+        function setTodayMobile(button, index) {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = button.previousElementSibling;
+            dateInput.value = today;
+            updateData(index, '发布时间', today);
+        }
+    </script>
+</body>
+</html>

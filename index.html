@@ -58,24 +58,25 @@
         <div class="tab-content" id="table">
             <!-- 项目状态统计 -->
             <div class="status-stats" id="statusStats">
-                <div class="status-card not-started">
+                <div class="status-card not-started" onclick="setFilter('not-started')">
                     <h3>未开始</h3>
                     <div class="number" id="notStartedCount">0</div>
                 </div>
-                <div class="status-card in-progress">
+                <div class="status-card in-progress" onclick="setFilter('in-progress')">
                     <h3>进行中</h3>
                     <div class="number" id="inProgressCount">0</div>
                 </div>
-                <div class="status-card published">
+                <div class="status-card published" onclick="setFilter('published')">
                     <h3>已发布</h3>
                     <div class="number" id="publishedCount">0</div>
                 </div>
             </div>
-            
+
             <div class="controls">
                 <button class="btn btn-primary" onclick="addRow()">添加行</button>
                 <button class="btn btn-danger" onclick="deleteSelectedRows()">删除选中行</button>
                 <button class="btn btn-success" onclick="saveChanges()" id="saveBtn">保存更改</button>
+                <button class="btn btn-secondary mobile-only" onclick="toggleAllMobileCards()" id="toggleAllBtn">全部展开</button>
             </div>
             
             <!-- 桌面端表格 -->

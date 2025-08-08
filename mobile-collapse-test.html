@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>移动端卡片折叠功能测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        
+        .test-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-info h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        
+        .test-info p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .test-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        
+        .test-link:hover {
+            background: #0056b3;
+        }
+        
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .feature-highlight {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .feature-highlight h4 {
+            color: #155724;
+            margin-top: 0;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .feature-list li:before {
+            content: "✅ ";
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-info">
+        <h2>📱 移动端视频卡片折叠功能 - 新功能上线！</h2>
+        <p>我已经为您的视频项目管理器添加了卡片折叠功能，现在在手机端可以大大节省空间！</p>
+
+        <div class="feature-highlight">
+            <h4>🎯 新增功能特性：</h4>
+            <ul class="feature-list">
+                <li><strong>智能进度摘要：</strong>每个卡片顶部显示"已完成/总数 - 当前状态"</li>
+                <li><strong>单个卡片控制：</strong>点击"展开/折叠"按钮控制单个卡片的详细内容显示</li>
+                <li><strong>批量控制：</strong>新增"全部展开/全部折叠"按钮，一键控制所有卡片</li>
+                <li><strong>平滑动画效果：</strong>折叠和展开都有流畅的过渡动画和透明度变化</li>
+                <li><strong>智能状态检测：</strong>按钮图标和文本会根据状态自动变化</li>
+                <li><strong>保持功能完整：</strong>折叠状态下仍可编辑视频名称和选择卡片</li>
+            </ul>
+        </div>
+
+        <a href="index.html" class="test-link">打开主页面测试</a>
+    </div>
+    
+    <div class="instructions">
+        <h3>🔧 如何测试折叠功能：</h3>
+        <ol>
+            <li><strong>打开主页面：</strong>点击上方的"打开主页面测试"按钮</li>
+            <li><strong>切换到移动端视图：</strong>
+                <ul>
+                    <li>按 F12 打开开发者工具</li>
+                    <li>点击设备模拟图标（📱）</li>
+                    <li>选择手机设备（如 iPhone 或 Android）</li>
+                    <li>或者直接将浏览器窗口拖拽到很窄（宽度小于 768px）</li>
+                </ul>
+            </li>
+            <li><strong>进入数据表格页面：</strong>点击"数据表格"标签</li>
+            <li><strong>测试折叠功能：</strong>
+                <ul>
+                    <li>观察每个视频卡片顶部的进度摘要</li>
+                    <li>点击单个卡片的"展开"按钮查看详细内容</li>
+                    <li>点击单个卡片的"折叠"按钮隐藏详细内容</li>
+                    <li>使用工具栏中的"全部展开"按钮一次性展开所有卡片</li>
+                    <li>使用"全部折叠"按钮一次性折叠所有卡片</li>
+                    <li>注意观察平滑的动画效果和透明度变化</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="test-info">
+        <h3>📋 进度摘要说明：</h3>
+        <p>卡片顶部的进度摘要格式为：<strong>"已完成数/总数 - 当前状态"</strong></p>
+        <ul>
+            <li><strong>"0/5 - 未开始"</strong> - 还没有开始任何阶段</li>
+            <li><strong>"2/5 - 进行中 (拍摄已完成)"</strong> - 已完成2个阶段，当前在剪辑阶段</li>
+            <li><strong>"5/5 - 全部完成"</strong> - 所有阶段都已完成</li>
+        </ul>
+    </div>
+
+    <div class="test-info">
+        <h3>💡 使用建议：</h3>
+        <ul>
+            <li><strong>快速浏览：</strong>折叠状态下可以快速浏览所有视频的进度概况</li>
+            <li><strong>按需展开：</strong>只展开需要编辑的视频卡片，其他保持折叠状态</li>
+            <li><strong>节省空间：</strong>特别适合已完成视频较多的情况，大大减少滚动距离</li>
+            <li><strong>保持高效：</strong>视频名称编辑和选择功能在折叠状态下仍然可用</li>
+        </ul>
+    </div>
+
+    <div class="instructions">
+        <h3>🎨 视觉设计特点：</h3>
+        <ul>
+            <li><strong>清晰的层次结构：</strong>标题、摘要、按钮分层显示</li>
+            <li><strong>直观的交互反馈：</strong>按钮悬停效果和图标变化</li>
+            <li><strong>平滑的动画过渡：</strong>300ms的展开/折叠动画</li>
+            <li><strong>保持原有样式：</strong>状态颜色和卡片样式保持不变</li>
+        </ul>
+    </div>
+</body>
+</html>

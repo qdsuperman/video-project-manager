@@ -2,6 +2,7 @@
 let videoData = [];
 let charts = {};
 let hasUnsavedChanges = false;
+let currentFilter = 'all'; // 当前筛选状态：'all', 'not-started', 'in-progress', 'published'
 
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
@@ -217,31 +218,89 @@ function createMetricsChart() {
 
 // 更新状态统计
 function updateStatusStats() {
-    const notStarted = videoData.filter(item => 
+    const notStarted = videoData.filter(item =>
         item.剧本完成进度 === '未完成' || item.剧本完成进度 === ''
     ).length;
-    
-    const inProgress = videoData.filter(item => 
+
+    const inProgress = videoData.filter(item =>
         item.剧本完成进度 === '完成' && item.发布进度 !== '完成'
     ).length;
-    
-    const published = videoData.filter(item => 
+
+    const published = videoData.filter(item =>
         item.发布进度 === '完成'
     ).length;
 
     document.getElementById('notStartedCount').textContent = notStarted;
     document.getElementById('inProgressCount').textContent = inProgress;
     document.getElementById('publishedCount').textContent = published;
+
+    // 更新状态卡片的选中状态
+    updateStatusCardSelection();
 }
+
+// 根据当前筛选状态获取过滤后的数据
+function getFilteredData() {
+    if (currentFilter === 'all') {
+        return videoData;
+    }
+
+    return videoData.filter(item => {
+        switch (currentFilter) {
+            case 'not-started':
+                return item.剧本完成进度 === '未完成' || item.剧本完成进度 === '';
+            case 'in-progress':
+                return item.剧本完成进度 === '完成' && item.发布进度 !== '完成';
+            case 'published':
+                return item.发布进度 === '完成';
+            default:
+                return true;
+        }
+    });
+}
+
+// 设置筛选状态
+function setFilter(filterType) {
+    // 如果点击的是当前已选中的筛选状态，则取消筛选回到全量显示
+    if (currentFilter === filterType) {
+        currentFilter = 'all';
+    } else {
+        currentFilter = filterType;
+    }
+
+    updateTable();
+    updateStatusCardSelection();
+}
+
+// 更新状态卡片的选中状态
+function updateStatusCardSelection() {
+    // 移除所有状态卡片的选中状态
+    document.querySelectorAll('.status-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+
+    // 根据当前筛选状态添加选中状态
+    if (currentFilter !== 'all') {
+        const targetCard = document.querySelector(`.status-card.${currentFilter}`);
+        if (targetCard) {
+            targetCard.classList.add('selected');
+        }
+    }
+}
+
+
 
 // 更新表格
 function updateTable() {
+    // 根据当前筛选状态获取要显示的数据
+    const filteredData = getFilteredData();
+
     // 更新桌面端表格
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
 
-    videoData.forEach((item, index) => {
-        const row = createTableRow(item, index);
+    filteredData.forEach((item) => {
+        const originalIndex = videoData.indexOf(item);
+        const row = createTableRow(item, originalIndex);
         tbody.appendChild(row);
     });
 
@@ -252,11 +311,15 @@ function updateTable() {
 
 // 更新移动端表格
 function updateMobileTable() {
+    // 根据当前筛选状态获取要显示的数据
+    const filteredData = getFilteredData();
+
     const container = document.getElementById('mobileTableContainer');
     container.innerHTML = '';
 
-    videoData.forEach((item, index) => {
-        const card = createMobileCard(item, index);
+    filteredData.forEach((item) => {
+        const originalIndex = videoData.indexOf(item);
+        const card = createMobileCard(item, originalIndex);
         container.appendChild(card);
     });
 }
@@ -389,111 +452,212 @@ function createMobileCard(item, index) {
 
     const progressOptions = ['', '未完成', '完成'];
 
+    // 获取进度摘要信息
+    const progressSummary = getProgressSummary(item);
+
     card.innerHTML = `
         <div class="mobile-card-header">
-            <input type="text" value="${item.视频名称 || ''}"
-                   onchange="updateData(${index}, '视频名称', this.value)"
-                   style="border: none; background: transparent; font-weight: bold; font-size: 16px; width: calc(100% - 40px);">
-            <input type="checkbox" class="mobile-card-checkbox row-checkbox" data-index="${index}">
-        </div>
-
-        <div class="mobile-field">
-            <span class="mobile-field-label">剧本:</span>
-            <div class="mobile-field-value">
-                <select onchange="updateData(${index}, '剧本完成进度', this.value)">
-                    ${progressOptions.map(option =>
-                        `<option value="${option}" ${item.剧本完成进度 === option ? 'selected' : ''}>${option || '未设置'}</option>`
-                    ).join('')}
-                </select>
+            <div class="mobile-card-title-row">
+                <input type="text" value="${item.视频名称 || ''}"
+                       onchange="updateData(${index}, '视频名称', this.value)"
+                       style="border: none; background: transparent; font-weight: bold; font-size: 16px; flex: 1;">
+                <input type="checkbox" class="mobile-card-checkbox row-checkbox" data-index="${index}">
+            </div>
+            <div class="mobile-card-summary">
+                <span class="progress-summary">${progressSummary}</span>
+                <button class="mobile-card-toggle" onclick="toggleMobileCard(${index})" type="button">
+                    <span class="toggle-icon">▼</span>
+                    <span class="toggle-text">展开</span>
+                </button>
             </div>
         </div>
 
-        <div class="mobile-field">
-            <span class="mobile-field-label">拍摄:</span>
-            <div class="mobile-field-value">
-                <select onchange="updateData(${index}, '来访拍摄进度', this.value)">
-                    ${progressOptions.map(option =>
-                        `<option value="${option}" ${item.来访拍摄进度 === option ? 'selected' : ''}>${option || '未设置'}</option>`
-                    ).join('')}
-                </select>
-            </div>
-        </div>
-
-        <div class="mobile-field">
-            <span class="mobile-field-label">剪辑:</span>
-            <div class="mobile-field-value">
-                <select onchange="updateData(${index}, '剪辑进度', this.value)">
-                    ${progressOptions.map(option =>
-                        `<option value="${option}" ${item.剪辑进度 === option ? 'selected' : ''}>${option || '未设置'}</option>`
-                    ).join('')}
-                </select>
-            </div>
-        </div>
-
-        <div class="mobile-field">
-            <span class="mobile-field-label">审核:</span>
-            <div class="mobile-field-value">
-                <select onchange="updateData(${index}, '审核进度', this.value)">
-                    ${progressOptions.map(option =>
-                        `<option value="${option}" ${item.审核进度 === option ? 'selected' : ''}>${option || '未设置'}</option>`
-                    ).join('')}
-                </select>
-            </div>
-        </div>
-
-        <div class="mobile-field">
-            <span class="mobile-field-label">发布:</span>
-            <div class="mobile-field-value">
-                <select onchange="updateData(${index}, '发布进度', this.value)">
-                    ${progressOptions.map(option =>
-                        `<option value="${option}" ${item.发布进度 === option ? 'selected' : ''}>${option || '未设置'}</option>`
-                    ).join('')}
-                </select>
-            </div>
-        </div>
-
-        <div class="mobile-field">
-            <span class="mobile-field-label">时间:</span>
-            <div class="mobile-field-value">
-                <div style="display: flex; gap: 5px;">
-                    <input type="date" value="${item.发布时间 || ''}"
-                           onchange="updateData(${index}, '发布时间', this.value)"
-                           style="flex: 1;">
-                    <button type="button" onclick="setTodayMobile(this, ${index})"
-                            style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px;">今天</button>
+        <div class="mobile-card-content" id="mobile-card-content-${index}">
+            <div class="mobile-field">
+                <span class="mobile-field-label">剧本:</span>
+                <div class="mobile-field-value">
+                    <select onchange="updateData(${index}, '剧本完成进度', this.value)">
+                        ${progressOptions.map(option =>
+                            `<option value="${option}" ${item.剧本完成进度 === option ? 'selected' : ''}>${option || '未设置'}</option>`
+                        ).join('')}
+                    </select>
                 </div>
             </div>
-        </div>
 
-        <div class="mobile-metrics">
-            <div class="mobile-metric">
-                <div class="mobile-metric-label">浏览量</div>
-                <input type="number" value="${item.浏览量 || ''}"
-                       onchange="updateData(${index}, '浏览量', this.value)"
-                       class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+            <div class="mobile-field">
+                <span class="mobile-field-label">拍摄:</span>
+                <div class="mobile-field-value">
+                    <select onchange="updateData(${index}, '来访拍摄进度', this.value)">
+                        ${progressOptions.map(option =>
+                            `<option value="${option}" ${item.来访拍摄进度 === option ? 'selected' : ''}>${option || '未设置'}</option>`
+                        ).join('')}
+                    </select>
+                </div>
             </div>
-            <div class="mobile-metric">
-                <div class="mobile-metric-label">点赞量</div>
-                <input type="number" value="${item.点赞量 || ''}"
-                       onchange="updateData(${index}, '点赞量', this.value)"
-                       class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+
+            <div class="mobile-field">
+                <span class="mobile-field-label">剪辑:</span>
+                <div class="mobile-field-value">
+                    <select onchange="updateData(${index}, '剪辑进度', this.value)">
+                        ${progressOptions.map(option =>
+                            `<option value="${option}" ${item.剪辑进度 === option ? 'selected' : ''}>${option || '未设置'}</option>`
+                        ).join('')}
+                    </select>
+                </div>
             </div>
-            <div class="mobile-metric">
-                <div class="mobile-metric-label">评论量</div>
-                <input type="number" value="${item.评论量 || ''}"
-                       onchange="updateData(${index}, '评论量', this.value)"
-                       class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+
+            <div class="mobile-field">
+                <span class="mobile-field-label">审核:</span>
+                <div class="mobile-field-value">
+                    <select onchange="updateData(${index}, '审核进度', this.value)">
+                        ${progressOptions.map(option =>
+                            `<option value="${option}" ${item.审核进度 === option ? 'selected' : ''}>${option || '未设置'}</option>`
+                        ).join('')}
+                    </select>
+                </div>
             </div>
-            <div class="mobile-metric">
-                <div class="mobile-metric-label">转发量</div>
-                <input type="number" value="${item.转发量 || ''}"
-                       onchange="updateData(${index}, '转发量', this.value)"
-                       class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+
+            <div class="mobile-field">
+                <span class="mobile-field-label">发布:</span>
+                <div class="mobile-field-value">
+                    <select onchange="updateData(${index}, '发布进度', this.value)">
+                        ${progressOptions.map(option =>
+                            `<option value="${option}" ${item.发布进度 === option ? 'selected' : ''}>${option || '未设置'}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+            </div>
+
+            <div class="mobile-field">
+                <span class="mobile-field-label">时间:</span>
+                <div class="mobile-field-value">
+                    <div style="display: flex; gap: 5px;">
+                        <input type="date" value="${item.发布时间 || ''}"
+                               onchange="updateData(${index}, '发布时间', this.value)"
+                               style="flex: 1;">
+                        <button type="button" onclick="setTodayMobile(this, ${index})"
+                                style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px;">今天</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mobile-metrics">
+                <div class="mobile-metric">
+                    <div class="mobile-metric-label">浏览量</div>
+                    <input type="number" value="${item.浏览量 || ''}"
+                           onchange="updateData(${index}, '浏览量', this.value)"
+                           class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+                </div>
+                <div class="mobile-metric">
+                    <div class="mobile-metric-label">点赞量</div>
+                    <input type="number" value="${item.点赞量 || ''}"
+                           onchange="updateData(${index}, '点赞量', this.value)"
+                           class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+                </div>
+                <div class="mobile-metric">
+                    <div class="mobile-metric-label">评论量</div>
+                    <input type="number" value="${item.评论量 || ''}"
+                           onchange="updateData(${index}, '评论量', this.value)"
+                           class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+                </div>
+                <div class="mobile-metric">
+                    <div class="mobile-metric-label">转发量</div>
+                    <input type="number" value="${item.转发量 || ''}"
+                           onchange="updateData(${index}, '转发量', this.value)"
+                           class="mobile-metric-value" style="text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px;">
+                </div>
             </div>
         </div>
     `;
 
     return card;
+}
+
+// 获取进度摘要信息
+function getProgressSummary(item) {
+    const stages = [
+        { key: '剧本完成进度', name: '剧本' },
+        { key: '来访拍摄进度', name: '拍摄' },
+        { key: '剪辑进度', name: '剪辑' },
+        { key: '审核进度', name: '审核' },
+        { key: '发布进度', name: '发布' }
+    ];
+
+    const completed = stages.filter(stage => item[stage.key] === '完成').length;
+    const total = stages.length;
+
+    // 找出当前进行到哪个阶段
+    let currentStage = '未开始';
+    for (let i = 0; i < stages.length; i++) {
+        if (item[stages[i].key] === '完成') {
+            continue;
+        } else if (item[stages[i].key] === '未完成' || item[stages[i].key] === '') {
+            if (i === 0) {
+                currentStage = '未开始';
+            } else {
+                currentStage = `进行中 (${stages[i-1].name}已完成)`;
+            }
+            break;
+        }
+    }
+
+    if (completed === total) {
+        currentStage = '全部完成';
+    }
+
+    return `${completed}/${total} - ${currentStage}`;
+}
+
+// 切换移动端卡片的折叠状态
+function toggleMobileCard(index) {
+    const content = document.getElementById(`mobile-card-content-${index}`);
+    const button = content.parentElement.querySelector('.mobile-card-toggle');
+    const icon = button.querySelector('.toggle-icon');
+    const text = button.querySelector('.toggle-text');
+
+    if (content.classList.contains('expanded')) {
+        // 折叠
+        content.classList.remove('expanded');
+        icon.textContent = '▼';
+        text.textContent = '展开';
+    } else {
+        // 展开
+        content.classList.add('expanded');
+        icon.textContent = '▲';
+        text.textContent = '折叠';
+    }
+}
+
+// 全部展开/折叠移动端卡片
+function toggleAllMobileCards() {
+    const allContents = document.querySelectorAll('.mobile-card-content');
+    const toggleAllBtn = document.getElementById('toggleAllBtn');
+
+    if (allContents.length === 0) return;
+
+    // 检查当前状态 - 如果有任何一个是折叠的，就全部展开；如果全部都展开了，就全部折叠
+    const hasCollapsed = Array.from(allContents).some(content => !content.classList.contains('expanded'));
+
+    allContents.forEach((content, index) => {
+        const button = content.parentElement.querySelector('.mobile-card-toggle');
+        const icon = button.querySelector('.toggle-icon');
+        const text = button.querySelector('.toggle-text');
+
+        if (hasCollapsed) {
+            // 全部展开
+            content.classList.add('expanded');
+            icon.textContent = '▲';
+            text.textContent = '折叠';
+        } else {
+            // 全部折叠
+            content.classList.remove('expanded');
+            icon.textContent = '▼';
+            text.textContent = '展开';
+        }
+    });
+
+    // 更新全部展开/折叠按钮的文本
+    toggleAllBtn.textContent = hasCollapsed ? '全部折叠' : '全部展开';
 }
 
 // 创建表格行
